@@ -8,6 +8,8 @@ define behavior for ZC_054906_TravelTP alias Travel
   use delete;
 
   use association _Bookings { create; }
+
+  use action ShowTestMessage;
 }
 
 define behavior for ZC_054906_BookingTP alias Booking

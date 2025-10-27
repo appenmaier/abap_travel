@@ -14,9 +14,12 @@ annotate view ZC_054906_TravelTP with
   @UI.facet: [ { position: 10, targetQualifier: 'TravelDetails', label: 'Travel Details', type: #FIELDGROUP_REFERENCE },
                { position: 20, targetQualifier: 'AdminData', label: 'Administrative Data', type: #FIELDGROUP_REFERENCE },
                { position: 30, targetElement: '_Bookings', label: 'Bookings', type: #LINEITEM_REFERENCE } ]
+  @UI.fieldGroup: [ { position: 10, qualifier: 'AdminData' } ]
+
+  /* Actions */
+  @UI.lineItem: [ { position: 10, dataAction: 'ShowTestMessage', label: 'Show Test Message', type: #FOR_ACTION } ]
 
   /* Fields */
-  @UI.fieldGroup: [ { position: 10, qualifier: 'AdminData' } ]
   TravelUuid;
 
   @UI.fieldGroup: [ { position: 10, qualifier: 'TravelDetails' } ]
