@@ -13,10 +13,15 @@ define view entity ZC_054906_BookingTP
       TravelUuid,
       BookingId,
       BookingDate,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: '/DMO/I_Carrier_StdVH', element: 'AirlineID' } } ]
       CarrierId,
+
       ConnectionId,
       FlightDate,
       FlightPrice,
+
+      @Consumption.valueHelpDefinition: [ { entity: { name: 'I_CurrencyStdVH', element: 'Currency' } } ]
       CurrencyCode,
 
       /* Associations */

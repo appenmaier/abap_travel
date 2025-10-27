@@ -5,6 +5,8 @@
                   title.value: 'TravelId',
                   description.value: 'Description' }
 
+@UI.presentationVariant: [ { sortOrder: [ { by: 'BeginDate', direction: #DESC } ] } ]
+
 annotate view ZC_054906_TravelTP with
 
 {
@@ -52,11 +54,14 @@ annotate view ZC_054906_TravelTP with
   //  CurrencyCode;
 
   @UI.fieldGroup: [ { position: 80, qualifier: 'TravelDetails' } ]
-  @UI.lineItem: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 70, criticality: 'BeginDateCriticality', criticalityRepresentation: #WITHOUT_ICON } ]
   Description;
 
-  @UI.fieldGroup: [ { position: 90, qualifier: 'TravelDetails' } ]
-  @UI.lineItem: [ { position: 80 } ]
+  @UI.fieldGroup: [ { position: 90,
+                      qualifier: 'TravelDetails',
+                      criticality: 'StatusCriticality',
+                      criticalityRepresentation: #WITHOUT_ICON } ]
+  @UI.lineItem: [ { position: 80, criticality: 'StatusCriticality', criticalityRepresentation: #WITHOUT_ICON } ]
   @UI.selectionField: [ { position: 60 } ]
   Status;
 
