@@ -32,6 +32,18 @@
      <MSGNR>004</MSGNR>
      <TEXT>Begin Date must be before End Date</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z054906TRAVEL</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Travel &amp;1 is already cancelled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z054906TRAVEL</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Travel &amp;1 was successfully cancelled</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

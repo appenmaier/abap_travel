@@ -14,6 +14,8 @@ authorization master ( instance )
   association _Bookings { create; }
 
   static action ShowTestMessage;
+  action CancelTravel result [1] $self;
+  action MaintainBookingFee parameter ZA_054906_BookingFee result [1] $self;
 
   validation ValidateDates on save { create; }
   validation ValidateCustomer on save { create; }

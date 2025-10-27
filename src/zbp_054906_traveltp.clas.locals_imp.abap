@@ -20,6 +20,12 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS determinetravelid FOR DETERMINE ON MODIFY
       IMPORTING keys FOR travel~determinetravelid.
+
+    METHODS canceltravel FOR MODIFY
+      IMPORTING keys FOR ACTION travel~canceltravel RESULT result.
+
+    METHODS maintainbookingfee FOR MODIFY
+      IMPORTING keys FOR ACTION travel~maintainbookingfee RESULT result.
 ENDCLASS.
 
 
@@ -127,5 +133,70 @@ CLASS lhc_travel IMPLEMENTATION.
            WITH VALUE #( FOR key IN keys
                          ( %tky     = key-%tky
                            TravelId = travel_id ) ).
+  ENDMETHOD.
+
+  METHOD canceltravel.
+    DATA message TYPE REF TO zcm_054906_travel.
+
+    " Read Travels
+    READ ENTITY IN LOCAL MODE ZR_054906_TravelTP
+         ALL FIELDS
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(travels).
+
+    " Process Travels
+    LOOP AT travels REFERENCE INTO DATA(travel).
+      " Validate Status and Create Error Message
+      IF travel->Status = 'X'.
+        message = NEW zcm_054906_travel( textid      = zcm_054906_travel=>travel_already_cancelled
+                                         description = travel->Description ).
+        APPEND VALUE #( %tky     = travel->%tky
+                        %element = VALUE #( Status = if_abap_behv=>mk-on )
+                        %msg     = message ) TO reported-travel.
+        APPEND VALUE #( %tky = travel->%tky ) TO failed-travel.
+        DELETE travels INDEX sy-tabix.
+        CONTINUE.
+      ENDIF.
+
+      " Set Status to Cancelled and Create Success Message
+      travel->Status = 'X'.
+      message = NEW zcm_054906_travel( severity    = if_abap_behv_message=>severity-success
+                                       textid      = zcm_054906_travel=>travel_cancelled_successfully
+                                       description = travel->Description ).
+      APPEND VALUE #( %tky     = travel->%tky
+                      %element = VALUE #( Status = if_abap_behv=>mk-on )
+                      %msg     = message ) TO reported-travel.
+    ENDLOOP.
+
+    " Modify Travels
+    MODIFY ENTITY IN LOCAL MODE ZR_054906_TravelTP
+           UPDATE FIELDS ( Status )
+           WITH VALUE #( FOR t IN travels
+                         ( %tky = t-%tky Status = t-Status ) ).
+
+    " Set Result
+    result = VALUE #( FOR t IN travels
+                      ( %tky   = t-%tky
+                        %param = t ) ).
+  ENDMETHOD.
+
+  METHOD maintainbookingfee.
+    " Modify Travels
+    MODIFY ENTITY IN LOCAL MODE ZR_054906_TravelTP
+           UPDATE FIELDS ( BookingFee CurrencyCode )
+           WITH VALUE #( FOR key IN keys
+                         ( %tky         = key-%tky
+                           BookingFee   = key-%param-BookingFee
+                           CurrencyCode = key-%param-CurrencyCode ) ).
+
+    " Read Travels
+    READ ENTITY IN LOCAL MODE ZR_054906_TravelTP
+         ALL FIELDS
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(travels).
+
+    " Set Result
+    result = VALUE #( FOR t IN travels
+                      ( %tky = t-%tky %param = t ) ).
   ENDMETHOD.
 ENDCLASS.

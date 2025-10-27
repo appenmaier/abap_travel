@@ -50,19 +50,41 @@ CLASS zcm_054906_travel DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF invalid_dates.
 
+    CONSTANTS:
+      BEGIN OF travel_already_cancelled,
+        msgid TYPE symsgid      VALUE 'Z054906TRAVEL',
+        msgno TYPE symsgno      VALUE '005',
+        attr1 TYPE scx_attrname VALUE 'DESCRIPTION',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF travel_already_cancelled.
+
+    CONSTANTS:
+      BEGIN OF travel_cancelled_successfully,
+        msgid TYPE symsgid      VALUE 'Z054906TRAVEL',
+        msgno TYPE symsgno      VALUE '006',
+        attr1 TYPE scx_attrname VALUE 'DESCRIPTION',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF travel_cancelled_successfully.
+
     " Attributs
     DATA user_name   TYPE syuname.
     DATA agency_id   TYPE /dmo/agency_id.
     DATA customer_id TYPE /dmo/customer_id.
+    DATA description TYPE /dmo/description.
 
     " Constructor
     METHODS constructor
-      IMPORTING severity    TYPE if_abap_behv_message=>t_severity DEFAULT if_abap_behv_message=>severity-error
-                textid      LIKE if_t100_message=>t100key         DEFAULT if_t100_message=>default_textid
-                !previous   LIKE previous                         OPTIONAL
-                user_name   TYPE syuname                          OPTIONAL
-                agency_id   TYPE /dmo/agency_id                   OPTIONAL
-                customer_id TYPE /dmo/customer_id                 OPTIONAL.
+      IMPORTING severity     TYPE if_abap_behv_message=>t_severity DEFAULT if_abap_behv_message=>severity-error
+                textid       LIKE if_t100_message=>t100key         DEFAULT if_t100_message=>default_textid
+                !previous    LIKE previous                         OPTIONAL
+                user_name    TYPE syuname                          OPTIONAL
+                agency_id    TYPE /dmo/agency_id                   OPTIONAL
+                customer_id  TYPE /dmo/customer_id                 OPTIONAL
+                !description TYPE /dmo/description                 OPTIONAL.
 
   PROTECTED SECTION.
 
@@ -80,5 +102,6 @@ CLASS zcm_054906_travel IMPLEMENTATION.
     me->user_name   = user_name.
     me->agency_id   = agency_id.
     me->customer_id = customer_id.
+    me->description = description.
   ENDMETHOD.
 ENDCLASS.

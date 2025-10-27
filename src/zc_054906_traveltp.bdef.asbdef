@@ -10,6 +10,8 @@ define behavior for ZC_054906_TravelTP alias Travel
   use association _Bookings { create; }
 
   use action ShowTestMessage;
+  use action CancelTravel;
+  use action MaintainBookingFee;
 }
 
 define behavior for ZC_054906_BookingTP alias Booking
