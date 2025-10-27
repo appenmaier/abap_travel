@@ -1,0 +1,47 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: { typeName: 'Booking',
+                  typeNamePlural: 'Bookings',
+                  title.value: 'BookingId',
+                  description.value: 'BookingDate' }
+
+annotate view ZC_054906_BookingTP with
+
+{
+  /* Facets */
+  @UI.facet: [ { position: 10, targetQualifier: 'BookingDetails', label: 'Booking Details',     type: #FIELDGROUP_REFERENCE },
+               { position: 20, targetQualifier: 'AdminData',      label: 'Administrative Data', type: #FIELDGROUP_REFERENCE } ]
+
+  /* Fields */
+  @UI.fieldGroup: [ { position: 10, qualifier: 'AdminData' } ]
+  BookingUuid;
+
+  @UI.fieldGroup: [ { position: 20, qualifier: 'AdminData' } ]
+  TravelUuid;
+
+  @UI.fieldGroup: [ { position: 10, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 10 } ]
+  BookingId;
+
+  @UI.fieldGroup: [ { position: 20, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 20 } ]
+  BookingDate;
+
+  @UI.fieldGroup: [ { position: 30, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 30 } ]
+  CarrierId;
+
+  @UI.fieldGroup: [ { position: 40, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 40 } ]
+  ConnectionId;
+
+  @UI.fieldGroup: [ { position: 50, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 50 } ]
+  FlightDate;
+
+  @UI.fieldGroup: [ { position: 60, qualifier: 'BookingDetails' } ]
+  @UI.lineItem: [ { position: 60 } ]
+  FlightPrice;
+
+  //  CurrencyCode;
+}
