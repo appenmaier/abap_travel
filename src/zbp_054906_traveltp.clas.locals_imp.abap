@@ -29,6 +29,9 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
+
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR travel RESULT result.
 ENDCLASS.
 
 
@@ -229,17 +232,17 @@ CLASS lhc_travel IMPLEMENTATION.
 
     " Process Travels
     LOOP AT travels REFERENCE INTO DATA(travel).
-      " Validate Status and Create Error Message
-      IF travel->Status = 'X'.
-        message = NEW zcm_054906_travel( textid      = zcm_054906_travel=>travel_already_cancelled
-                                         description = travel->Description ).
-        APPEND VALUE #( %tky     = travel->%tky
-                        %element = VALUE #( Status = if_abap_behv=>mk-on )
-                        %msg     = message ) TO reported-travel.
-        APPEND VALUE #( %tky = travel->%tky ) TO failed-travel.
-        DELETE travels INDEX sy-tabix.
-        CONTINUE.
-      ENDIF.
+*      " Validate Status and Create Error Message
+*      IF travel->Status = 'X'.
+*        message = NEW zcm_054906_travel( textid      = zcm_054906_travel=>travel_already_cancelled
+*                                         description = travel->Description ).
+*        APPEND VALUE #( %tky     = travel->%tky
+*                        %element = VALUE #( Status = if_abap_behv=>mk-on )
+*                        %msg     = message ) TO reported-travel.
+*        APPEND VALUE #( %tky = travel->%tky ) TO failed-travel.
+*        DELETE travels INDEX sy-tabix.
+*        CONTINUE.
+*      ENDIF.
 
       " Set Status to Cancelled and Create Success Message
       travel->Status = 'X'.
@@ -300,5 +303,20 @@ CLASS lhc_travel IMPLEMENTATION.
 
     " Test Implementation
     result-%create = if_abap_behv=>auth-allowed.
+  ENDMETHOD.
+
+  METHOD get_instance_features.
+    " Read Travels
+    READ ENTITY IN LOCAL MODE ZR_054906_TravelTP
+         FIELDS ( Status )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(travels).
+
+    " Set Feature Control for Action Cancel Travel
+    result = VALUE #( FOR travel IN travels
+                      ( %tky                 = travel-%tky
+                        %action-CancelTravel = COND #( WHEN travel-Status = 'X'
+                                                       THEN if_abap_behv=>fc-o-disabled
+                                                       ELSE if_abap_behv=>fc-o-enabled ) ) ).
   ENDMETHOD.
 ENDCLASS.

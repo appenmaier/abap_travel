@@ -17,7 +17,7 @@ authorization master ( global, instance )
   association _Bookings { create; with draft; }
 
   static action ShowTestMessage;
-  action CancelTravel result [1] $self;
+  action ( features : instance ) CancelTravel result [1] $self;
   action MaintainBookingFee parameter ZA_054906_BookingFee result [1] $self;
 
   draft action Activate optimized;
