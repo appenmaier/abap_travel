@@ -1,0 +1,11 @@
+@EndUserText.label: 'Role for ZC_TravelTP'
+@MappingRole: true
+define role ZR_054906_TRAVELTP {
+// Productive Implementation
+//  grant select on ZR_054906_TravelTP
+//    where (AgencyId) = aspect pfcg_auth(ZAGENCY, ZAGENCY_ID, ACTVT = '03');
+
+// Test Implementation
+  grant select on ZR_054906_TravelTP
+    where AgencyId > '070000' and AgencyId <= '070040';
+}

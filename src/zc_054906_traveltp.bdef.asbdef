@@ -1,5 +1,6 @@
 projection;
 strict ( 2 );
+use draft;
 
 define behavior for ZC_054906_TravelTP alias Travel
 {
@@ -7,11 +8,17 @@ define behavior for ZC_054906_TravelTP alias Travel
   use update;
   use delete;
 
-  use association _Bookings { create; }
+  use association _Bookings { create; with draft; }
 
   use action ShowTestMessage;
   use action CancelTravel;
   use action MaintainBookingFee;
+
+  use action Activate;
+  use action Edit;
+  use action Discard;
+  use action Prepare;
+  use action Resume;
 }
 
 define behavior for ZC_054906_BookingTP alias Booking
@@ -19,5 +26,5 @@ define behavior for ZC_054906_BookingTP alias Booking
   use update;
   use delete;
 
-  use association _Travel;
+  use association _Travel { with draft; }
 }

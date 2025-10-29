@@ -26,11 +26,94 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS maintainbookingfee FOR MODIFY
       IMPORTING keys FOR ACTION travel~maintainbookingfee RESULT result.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
 ENDCLASS.
 
 
 CLASS lhc_travel IMPLEMENTATION.
   METHOD get_instance_authorizations.
+    " Determine Request-Operation
+    DATA(update_requested) = COND #( WHEN requested_authorizations-%update                    = if_abap_behv=>mk-on
+                                       OR requested_authorizations-%action-Edit               = if_abap_behv=>mk-on
+                                       OR requested_authorizations-%action-CancelTravel       = if_abap_behv=>mk-on
+                                       OR requested_authorizations-%action-MaintainBookingFee = if_abap_behv=>mk-on
+                                     THEN abap_true ).
+    DATA(delete_requested) = COND #( WHEN requested_authorizations-%delete = if_abap_behv=>mk-on THEN abap_true ).
+
+    IF update_requested IS INITIAL AND delete_requested IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " Read Travels
+    READ ENTITY IN LOCAL MODE ZR_054906_TravelTP
+         FIELDS ( AgencyId )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(travels).
+
+    " Check Authorizations
+    LOOP AT travels INTO DATA(travel).
+      " Update Operation
+      IF update_requested = abap_true.
+        " Productive Implementation
+*        AUTHORITY-CHECK OBJECT 'ZAGENCY'
+*                                ID 'ZAGENCY_ID' FIELD travel-AgencyId
+*                                ID 'ACTVT' FIELD '02'.
+*        IF sy-subrc <> 0.
+*          APPEND VALUE #( %tky                       = travel-%tky
+*                          %update                    = if_abap_behv=>auth-unauthorized
+*                          %action-Edit               = if_abap_behv=>auth-unauthorized
+*                          %action-CancelTravel       = if_abap_behv=>auth-unauthorized
+*                          %action-MaintainBookingFee = if_abap_behv=>auth-unauthorized ) TO result.
+*        ELSE.
+*          APPEND VALUE #( %tky                       = travel-%tky
+*                          %update                    = if_abap_behv=>auth-allowed
+*                          %action-Edit               = if_abap_behv=>auth-allowed
+*                          %action-CancelTravel       = if_abap_behv=>auth-allowed
+*                          %action-MaintainBookingFee = if_abap_behv=>auth-allowed ) TO result.
+*        ENDIF.
+
+        " Test Implementation
+        IF travel-AgencyId <= '070000' OR travel-AgencyId > '070030'.
+          APPEND VALUE #( %tky                       = travel-%tky
+                          %update                    = if_abap_behv=>auth-unauthorized
+                          %action-Edit               = if_abap_behv=>auth-unauthorized
+                          %action-CancelTravel       = if_abap_behv=>auth-unauthorized
+                          %action-MaintainBookingFee = if_abap_behv=>auth-unauthorized ) TO result.
+        ELSE.
+          APPEND VALUE #( %tky                       = travel-%tky
+                          %update                    = if_abap_behv=>auth-allowed
+                          %action-Edit               = if_abap_behv=>auth-allowed
+                          %action-CancelTravel       = if_abap_behv=>auth-allowed
+                          %action-MaintainBookingFee = if_abap_behv=>auth-allowed ) TO result.
+        ENDIF.
+      ENDIF.
+
+      " Delete Operation
+      IF delete_requested = abap_true.
+        " Productive Implementation
+*        AUTHORITY-CHECK OBJECT 'ZAGENCY'
+*                        ID 'ZAGENCY_ID' FIELD travel-AgencyId
+*                        ID 'ACTVT' FIELD '06'.
+*        IF sy-subrc <> 0.
+*          APPEND VALUE #( %tky    = travel-%tky
+*                          %delete = if_abap_behv=>auth-unauthorized ) TO result.
+*        ELSE.
+*          APPEND VALUE #( %tky    = travel-%tky
+*                          %delete = if_abap_behv=>auth-allowed ) TO result.
+*        ENDIF.
+
+        " Test Implementation
+        IF travel-AgencyId <= '070000' OR travel-AgencyId > '070020'.
+          APPEND VALUE #( %tky    = travel-%tky
+                          %delete = if_abap_behv=>auth-unauthorized ) TO result.
+        ELSE.
+          APPEND VALUE #( %tky    = travel-%tky
+                          %delete = if_abap_behv=>auth-allowed ) TO result.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD showtestmessage.
@@ -198,5 +281,24 @@ CLASS lhc_travel IMPLEMENTATION.
     " Set Result
     result = VALUE #( FOR t IN travels
                       ( %tky = t-%tky %param = t ) ).
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
+    IF requested_authorizations-%create <> if_abap_behv=>mk-on.
+      RETURN.
+    ENDIF.
+
+    " Productive Implementation
+*      AUTHORITY-CHECK OBJECT 'ZAGENCY'
+*                      ID 'ZAGENCY_ID' DUMMY
+*                      ID 'ACTVT' FIELD '01'.
+*      IF sy-subrc <> 0.
+*        result-%create = if_abap_behv=>auth-unauthorized.
+*      ELSE.
+*        result-%create = if_abap_behv=>auth-allowed.
+*      ENDIF.
+
+    " Test Implementation
+    result-%create = if_abap_behv=>auth-allowed.
   ENDMETHOD.
 ENDCLASS.

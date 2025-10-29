@@ -1,21 +1,35 @@
 managed implementation in class zbp_054906_traveltp unique;
 strict ( 2 );
+with draft;
 
 define behavior for ZR_054906_TravelTP alias Travel
 persistent table z054906travel_a
+draft table z054906travel_d
 lock master
-authorization master ( instance )
+total etag LastChangedAt
+authorization master ( global, instance )
 //etag master <field_name>
 {
   create;
   update;
   delete;
 
-  association _Bookings { create; }
+  association _Bookings { create; with draft; }
 
   static action ShowTestMessage;
   action CancelTravel result [1] $self;
   action MaintainBookingFee parameter ZA_054906_BookingFee result [1] $self;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft determine action Prepare
+  {
+    validation ValidateDates;
+    validation ValidateCustomer;
+    validation ValidateAgency;
+  }
+  draft action Resume;
 
   validation ValidateDates on save { create; }
   validation ValidateCustomer on save { create; }
@@ -52,13 +66,14 @@ authorization master ( instance )
 define behavior for ZR_054906_BookingTP alias Booking
 persistent table z054906booking_a
 lock dependent by _Travel
+draft table z054906booking_d
 authorization dependent by _Travel
 //etag master <field_name>
 {
   update;
   delete;
 
-  association _Travel;
+  association _Travel { with draft; }
 
   field ( readonly, numbering : managed ) BookingUuid;
   field ( readonly ) TravelUuid;

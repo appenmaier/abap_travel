@@ -1,0 +1,6 @@
+@EndUserText.label: 'Role for ZC_TravelTP'
+@MappingRole: true
+define role ZC_054906_TRAVELTP {
+  grant select on ZC_054906_TravelTP
+   where inheriting conditions from entity ZR_054906_TravelTP;
+}
